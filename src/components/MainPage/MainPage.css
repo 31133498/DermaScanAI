@@ -19,7 +19,6 @@
   background: linear-gradient(to right bottom, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1)), url('https://images.pexels.com/photos/3992933/pexels-photo-3992933.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') no-repeat center center/cover;
   text-align: center;
   border-bottom: 1px solid #e0e0e0;
-opacity: 0;
 }
 
 .hero-content {
