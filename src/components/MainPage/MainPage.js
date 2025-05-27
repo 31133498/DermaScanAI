@@ -6,7 +6,7 @@ const MainPage = ({ navigateTo }) => {
     <div className="main-page-container">
       <section className="hero-section">
         <div className="hero-content">
-          <h1 className="main-title stunning-title"><span className="dark-highlight">Welcome to </span> DermaScan <span className="highlight">AI</span></h1>
+          <h1 className="main-title stunning-title">Welcome to DermaScan <span className="highlight">AI</span></h1>
           <p className="subtitle">Revolutionizing skin health analysis with the power of Artificial Intelligence.</p>
           <button className="cta-button hero-cta" onClick={() => navigateTo('scanner')}>Get Scanned</button>
         </div>
