@@ -36,6 +36,10 @@
   color: #3498db; /* Accent color for AI */
 }
 
+.dark-highlight{
+color: #333;
+}
+
 .subtitle {
   font-size: 1.3rem;
   color: #ffffff;
