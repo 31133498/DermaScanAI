@@ -13,7 +13,7 @@ const ScannerPage = () => {
     if (file) {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file)); // preview image
-      setResult(null); // clear previous result
+      setResult(null); // clear previous result on new upload
     }
   };
 
@@ -35,11 +35,23 @@ const ScannerPage = () => {
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to fetch prediction');
+      }
+
       const data = await response.json();
-      setResult(data);
+
+      // Safety check for keys in response
+      if (data.prediction && typeof data.confidence === 'number') {
+        setResult(data);
+      } else {
+        alert('Unexpected response from server.');
+        setResult(null);
+      }
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to get prediction. Please try again.');
+      setResult(null);
     } finally {
       setLoading(false);
     }
