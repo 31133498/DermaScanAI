@@ -41,8 +41,8 @@ const ScannerPage = () => {
 
       const data = await response.json();
 
-      // Safety check for keys in response
-      if (data.prediction && typeof data.confidence === 'number') {
+      // Safety check for keys in response with updated keys
+      if (data.label && typeof data.confidence === 'number') {
         setResult(data);
       } else {
         alert('Unexpected response from server.');
@@ -86,7 +86,7 @@ const ScannerPage = () => {
       <div className="results-section">
         {result && (
           <div>
-            <h3>Prediction: {result.prediction}</h3>
+            <h3>Prediction: {result.label}</h3>
             <p>Confidence: {result.confidence.toFixed(2)}%</p>
           </div>
         )}
