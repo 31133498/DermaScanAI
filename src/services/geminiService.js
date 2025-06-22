@@ -1,8 +1,17 @@
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+
+// --- FIX APPLIED HERE ---
+// Updated the model name from 'gemini-pro' to 'gemini-1.5-flash-latest'
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
 
 // Helper function to make the API call
 const getGeminiResponse = async (prompt, responseSchema) => {
+  if (!API_KEY) {
+      const errorMessage = "API key is missing. Please make sure REACT_APP_GEMINI_API_KEY is set in your .env file and you have restarted the server.";
+      console.error(errorMessage);
+      return { error: errorMessage };
+  }
+
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
