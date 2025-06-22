@@ -1,0 +1,134 @@
+const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+
+// Helper function to make the API call
+const getGeminiResponse = async (prompt, responseSchema) => {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          response_mime_type: "application/json",
+          response_schema: responseSchema,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("API Error Response:", errorBody);
+      throw new Error(`Google AI API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    const jsonText = data.candidates[0].content.parts[0].text;
+    return JSON.parse(jsonText);
+  } catch (error) {
+    console.error('Error fetching from Google AI:', error);
+    return { error: 'Failed to retrieve information from AI assistant. Please try again.' };
+  }
+};
+
+
+export const getHomeRemedies = (condition) => {
+  const prompt = `Based on the skin condition "${condition}", find up to 10 popular and generally safe home remedies. For each remedy, provide its name and a Google search link for more details.`;
+  const schema = {
+    type: "OBJECT",
+    properties: {
+      remedies: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING" },
+            link: { type: "STRING" },
+          },
+          required: ["name", "link"],
+        },
+      },
+    },
+  };
+  return getGeminiResponse(prompt, schema);
+};
+
+export const getSkincareProducts = (condition) => {
+  const prompt = `Based on the skin condition "${condition}", find up to 10 commercially available over-the-counter skincare products or product types that are commonly recommended. For each, provide the product name/type and a Google Shopping search link.`;
+  const schema = {
+    type: "OBJECT",
+    properties: {
+      products: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING" },
+            link: { type: "STRING" },
+          },
+          required: ["name", "link"],
+        },
+      },
+    },
+  };
+  return getGeminiResponse(prompt, schema);
+};
+
+export const getDermatologists = (condition) => {
+  const prompt = `Find up to 10 dermatologists or specialized clinics in Nigeria known for treating "${condition}". For each, provide their name, city/address, and a link to their website, contact page, or professional social media profile.`;
+  const schema = {
+    type: "OBJECT",
+    properties: {
+      dermatologists: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING" },
+            location: { type: "STRING" },
+            link: { type: "STRING" },
+          },
+          required: ["name", "location", "link"],
+        },
+      },
+    },
+  };
+  return getGeminiResponse(prompt, schema);
+};
+
+
+export const getChatbotResponse = async (history, message) => {
+    // This function does not use a JSON schema for a more natural conversation
+    const prompt = `You are an empathetic and knowledgeable AI Doctor from DermaScan AI.
+    A user has been diagnosed and is now asking for more information.
+    Keep your answers helpful, safe, and clear. Always remind the user that you are an AI and cannot provide official medical advice.
+    
+    Conversation History:
+    ${history.map(msg => `${msg.role}: ${msg.text}`).join('\n')}
+    
+    New User Question: ${message}
+    
+    Your Response:`;
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+            }),
+        });
+
+        if (!response.ok) throw new Error('API request failed');
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        console.error('Chatbot API Error:', error);
+        return "I'm having trouble connecting right now. Please try again in a moment.";
+    }
+};
