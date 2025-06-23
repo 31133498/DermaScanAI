@@ -8,13 +8,22 @@ import AIDoctorPage from './components/AIDoctorPage/AIDoctorPage';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('main');
-  // Store the diagnosis to pass to the AI Doctor chat
   const [diagnosedCondition, setDiagnosedCondition] = useState(null);
 
   const navigateTo = (page, data) => {
-    if (page === 'ai-doctor' && data?.condition) {
+    // This logic is now more specific
+    if (page === 'dermascan-ai') {
+      if (data?.condition) {
+        // This case handles navigation from the Scanner page AFTER a diagnosis.
+        // It sets the specific condition for the chatbot.
         setDiagnosedCondition(data.condition);
+      } else {
+        // This case handles navigation from the main Header.
+        // It clears any previous diagnosis to start a fresh chat session.
+        setDiagnosedCondition(null);
+      }
     }
+    
     setCurrentPage(page);
     window.scrollTo(0, 0);
   };
@@ -27,7 +36,7 @@ function App() {
               return <AboutPage />;
           case 'scanner':
               return <ScannerPage navigateTo={navigateTo} />;
-          case 'ai-doctor':
+          case 'dermascan-ai':
               return <AIDoctorPage diagnosedCondition={diagnosedCondition || "your condition"} />;
           default:
               return <MainPage navigateTo={navigateTo} />;
