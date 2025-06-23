@@ -1,10 +1,6 @@
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
-
-// --- FIX APPLIED HERE ---
-// Updated the model name from 'gemini-pro' to 'gemini-1.5-flash-latest'
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
 
-// Helper function to make the API call
 const getGeminiResponse = async (prompt, responseSchema) => {
   if (!API_KEY) {
       const errorMessage = "API key is missing. Please make sure REACT_APP_GEMINI_API_KEY is set in your .env file and you have restarted the server.";
@@ -42,9 +38,8 @@ const getGeminiResponse = async (prompt, responseSchema) => {
   }
 };
 
-
 export const getHomeRemedies = (condition) => {
-  const prompt = `Based on the skin condition "${condition}", find up to 10 popular and generally safe home remedies. For each remedy, provide its name and a Google search link for more details.`;
+  const prompt = `Based on the skin condition "${condition}", find up to 10 popular and generally safe home remedies. For each remedy, provide its name, a Google search link for more details, and a brief, practical direction on how to apply or use it on the affected skin area.`;
   const schema = {
     type: "OBJECT",
     properties: {
@@ -55,8 +50,9 @@ export const getHomeRemedies = (condition) => {
           properties: {
             name: { type: "STRING" },
             link: { type: "STRING" },
+            directions: { type: "STRING" },
           },
-          required: ["name", "link"],
+          required: ["name", "link", "directions"],
         },
       },
     },
@@ -86,7 +82,7 @@ export const getSkincareProducts = (condition) => {
 };
 
 export const getDermatologists = (condition) => {
-  const prompt = `Find up to 10 dermatologists or specialized clinics in Nigeria known for treating "${condition}". For each, provide their name, city/address, and a link to their website, contact page, or professional social media profile.`;
+  const prompt = `Find up to 10 dermatologists or specialized clinics in Nigeria known for treating "${condition}". For each, provide their name, city/address, a link to their official website or contact page, and their LinkedIn profile URL if available.`;
   const schema = {
     type: "OBJECT",
     properties: {
@@ -98,6 +94,7 @@ export const getDermatologists = (condition) => {
             name: { type: "STRING" },
             location: { type: "STRING" },
             link: { type: "STRING" },
+            linkedin: { type: "STRING" },
           },
           required: ["name", "location", "link"],
         },
@@ -107,19 +104,8 @@ export const getDermatologists = (condition) => {
   return getGeminiResponse(prompt, schema);
 };
 
-
 export const getChatbotResponse = async (history, message) => {
-    // This function does not use a JSON schema for a more natural conversation
-    const prompt = `You are an empathetic and knowledgeable AI Doctor from DermaScan AI.
-    A user has been diagnosed and is now asking for more information.
-    Keep your answers helpful, safe, and clear. Always remind the user that you are an AI and cannot provide official medical advice.
-    
-    Conversation History:
-    ${history.map(msg => `${msg.role}: ${msg.text}`).join('\n')}
-    
-    New User Question: ${message}
-    
-    Your Response:`;
+    const prompt = `You are the DermaScan AI, an empathetic and knowledgeable AI assistant. A user is asking for more information about their diagnosed skin condition. Keep your answers helpful, safe, and clear. Always remind the user that you are an AI and cannot provide official medical advice. Conversation History:\n${history.map(msg => `${msg.role}: ${msg.text}`).join('\n')}\n\nNew User Question: ${message}\n\nYour Response:`;
     
     try {
         const response = await fetch(API_URL, {
@@ -131,9 +117,7 @@ export const getChatbotResponse = async (history, message) => {
                 contents: [{ parts: [{ text: prompt }] }],
             }),
         });
-
         if (!response.ok) throw new Error('API request failed');
-
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
