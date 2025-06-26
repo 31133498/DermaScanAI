@@ -118,7 +118,15 @@ const ScannerPage = ({ navigateTo }) => {
       <p className="scanner-description">Upload images of your skin to check for potential signs of skin cancer.</p>
 
       <div className="upload-section">
-        <input type="file" id="skin-image-upload" accept="image/*" className="image-upload-input" onChange={handleFileChange} />
+        <input
+  type="file"
+  id="skin-image-upload"
+  accept="image/*"
+  capture="environment"
+  multiple
+  className="image-upload-input"
+  onChange={handleFileChange}
+/>
         <label htmlFor="skin-image-upload" className="upload-button cta-button">
           {selectedFile ? 'Change Image' : 'Upload Image'}
         </label>
