@@ -26,8 +26,9 @@ const InfoCard = ({ title, data, error, isLoading }) => {
 
 
 const ScannerPage = ({ navigateTo }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+const [previewUrls, setPreviewUrls] = useState([]);
+
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeInfo, setActiveInfo] = useState(null); // 'remedies', 'products', 'dermatologists'
@@ -36,15 +37,15 @@ const ScannerPage = ({ navigateTo }) => {
   const [infoError, setInfoError] = useState(null);
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      setResult(null);
-      setActiveInfo(null);
-      setInfoData({});
-    }
-  };
+  const files = Array.from(e.target.files);
+  if (files.length) {
+    setSelectedFiles(files);
+    setPreviewUrls(files.map(file => URL.createObjectURL(file)));
+    setResult(null);
+    setActiveInfo(null);
+    setInfoData({});
+  }
+};
 
   const handleAnalyzeClick = async () => {
     if (!selectedFile) {
@@ -56,7 +57,7 @@ const ScannerPage = ({ navigateTo }) => {
     setActiveInfo(null);
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    formData.append('file', selectedFiles[0]);
 
     try {
       const response = await fetch('https://derma-scan-backend.onrender.com/predict', {
