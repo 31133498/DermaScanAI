@@ -123,7 +123,6 @@ const [previewUrls, setPreviewUrls] = useState([]);
   type="file"
   id="skin-image-upload"
   accept="image/*"
-  capture="environment"
   multiple
   className="image-upload-input"
   onChange={handleFileChange}
