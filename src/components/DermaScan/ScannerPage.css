@@ -68,6 +68,10 @@
     color: #3498db;
 }
 
+.confidence-rate{
+    color: #333;
+}
+
 .disclaimer {
     font-size: 0.9rem;
     color: #e74c3c;
