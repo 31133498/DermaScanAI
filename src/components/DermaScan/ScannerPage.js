@@ -127,11 +127,19 @@ const [previewUrls, setPreviewUrls] = useState([]);
   className="image-upload-input"
   onChange={handleFileChange}
 />
-        <label htmlFor="skin-image-upload" className="upload-button cta-button">
-          {selectedFile ? 'Change Image' : 'Upload Image'}
-        </label>
+        
+<label htmlFor="skin-image-upload" className="upload-button cta-button">
+  {selectedFiles.length > 0 ? 'Change Images' : 'Upload Images'}
+</label>
+<input
+  type="file"
+  id="skin-image-upload"
+  accept="image/png,image/jpeg,image/jpg"
+  multiple
+  style={{ display: 'none' }}
+  onChange={handleFileChange}
+/>
       </div>
-
       {previewUrl && (
         <div className="image-preview">
           <img src={previewUrl} alt="Uploaded preview" />
